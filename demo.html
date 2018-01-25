@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1,ie=edge">
+    <meta name="format-detection" content="telephone=no">
+    <meta name="keywords" content="">
+    <meta name="description" content="">
+    <title>千素后台</title>
+    <link rel="stylesheet" href="libs/bootstrap/css/bootstrap.css">
+<!-- 日历 -->
+<link rel="stylesheet" type="text/css" href="libs/fullCalendar/fullcalendar.min.css">
+<link rel="stylesheet" type="text/css" href="css/calendar.css">
+</head>
+<body>
+
+<div class="calendar" style="padding: 20px;">
+	<div id="calendar"></div>
+</div>
+
+</div>
+<!-- 内容主体 end -->
+
+<!-- Modal -->
+<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title" id="myModalLabel">添加事件</h4>
+      </div>
+      <div class="modal-body">
+      	<div class="form-group">
+            <label for="message-text" class="control-label">事件内容:</label>
+            <textarea style="resize: none;" class="form-control" id="message-text"></textarea>
+        </div>
+        <div class="row">
+        	<div class="col-md-6">
+        		<div class="form-group">
+				    <label for="start">开始时间</label>
+				    <input type="text" class="form-control" id="start" placeholder="start" readonly>
+				</div>
+        	</div>
+        	<div class="col-md-6">
+        		<div class="form-group">
+				    <label for="end">结束时间</label>
+				    <input type="text" class="form-control" id="end" placeholder="end" readonly disabled>
+				</div>
+        	</div>
+        </div>
+        <div class="dropdown">
+		  <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+		    选择颜色区分
+		    <span class="caret"></span>
+		  </button>
+		  <div class="color">已选<span></span></div>
+		  <button type="button" style="float: right;" class="btn btn-danger" id="delete">删除事件</button>
+		  <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
+		    <li><a href="#" data-color='#ec4f04' style="color: #fff;background-color: #ec4f04;">深红</a></li>
+		    <li><a href="#" data-color='#d65a5e' style="color: #fff;background-color: #d65a5e;">红色</a></li>
+		    <li><a href="#" data-color='#37abfd' style="color: #fff;background-color: #37abfd;">浅蓝色</a></li>
+		    <li><a href="#" data-color='#4a90e2' style="color: #fff;background-color: #4a90e2;">蓝色</a></li>
+		    <li><a href="#" data-color='#FFEB3C' style="color: #fff;background-color: #FFEB3C;">鲜橙色</a></li>
+		    <li><a href="#" data-color='#69cf36' style="color: #fff;background-color: #69cf36;">草绿</a></li>
+		  </ul>
+		</div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+        <button type="button" class="btn btn-primary" id='save'>保存</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script type="text/javascript" src="libs/jQuery/jquery-2.2.4.min.js"></script>
+<script type="text/javascript" src="libs/bootstrap/js/bootstrap.min.js"></script>
+<!--[if lt IE 9]>
+<script type="text/javascript"  src="libs/jQuery/html5shiv.js"></script>
+<![endif]-->
+
+
+<!-- 日历 -->
+<script type="text/javascript" src="libs/fullCalendar/moment.min.js"></script>
+<script src="libs/fullCalendar/fullcalendar.min.js"></script>
+<script type="text/javascript" src="./libs/laydate/laydate.js"></script>
+
+<script type="text/javascript">
+	$(function(){
+		//大日历
+		$('#calendar').fullCalendar({
+			header: {
+				left: 'prev,next today',
+				center: 'title',
+				right: 'month,agendaWeek,agendaDay'
+			},
+			selectable: true,
+			selectHelper: true,
+			contentHeight:700,
+			buttonText:{
+				month:    'Month',
+			    week:     'Week',
+			    day:      'Day'
+			},
+			eventLimit: true, // allow "more" link when too many events
+			events: 'php/demo.php',
+			eventClick: function(event) {
+				console.log(event)
+				var Eventlist,id=event.id;
+				$("#delete").show();
+				$("#message-text").val(event.title);
+				$("#start").val(event.start._i);
+				$("#end").val(event.end._i);
+				$('#myModal .color span').css('backgroundColor',event.backgroundColor);
+				$('#myModal').modal();
+				EDIT(id);
+		    },
+			select: function(start, end) {
+				$("#delete").hide();
+				$('#myModal').modal();
+				NEW();
+			},
+			eventDrop:function(event,dayDelta,minuteDelta,allDay,revertFunc) {//拖拽
+				//
+		    },
+			eventResize: function(event, dayDelta, minuteDelta, revertFunc, jsEvent, ui, view) {//移动大小
+				//
+		    },
+		});
+		$('.dropdown-menu').on('click','li',function(){
+			var color=$(this).children().data('color');
+			$(this).parent().siblings('.color').children('span').css('backgroundColor',color);
+		})
+		$('#myModal').on('show.bs.modal', function (e) {
+		  	time();
+		})
+		$('#myModal').on('hidden.bs.modal', function (e) {
+		  	$('#message-text,#start,#end').val('');
+		  	$('#end').attr('disabled',true);
+			$('#myModal .color span').css('backgroundColor','#ec4f04');
+		})
+	})
+	function NEW(){
+		$('#save').click(function(){
+			var title=$('#message-text').val();
+			var color=$('.color span').css('backgroundColor');
+			var start=$('#start').val();
+			var end=$("#end").val();
+			if(title!==''&&start!==''&&end!==''){
+				$("#myModal").modal('hide');
+				$('#message-text,#start,#end').val('');
+				$('#myModal .color span').css('backgroundColor','#ec4f04');
+				eventData = {
+					title: title,
+					start: start,
+					end: end,
+					backgroundColor:color
+				};
+				$('#calendar').fullCalendar('renderEvent', eventData, true); // stick? = true
+				$('#calendar').fullCalendar('unselect');
+				// $.ajax({
+				// })
+				$('#calendar').fullCalendar('refetchEvents');
+			}
+		})
+	}
+	function EDIT(id){
+		$('#delete').click(function(){
+			$('#myModal').modal('hide');
+			$('#calendar').fullCalendar('removeEvents',id);
+			// $.ajax({
+
+			// })
+			$('#calendar').fullCalendar('refetchEvents');
+		})
+		$('#save').click(function(){
+			var title=$('#message-text').val();
+			var color=$('.color span').css('backgroundColor');
+			var start=$('#start').val();
+			var end=$("#end").val();
+			if(title!==''){
+				$("#myModal").modal('hide');
+				$('#message-text').val('');
+				$('.color span').css('backgroundColor','#ec4f04');
+				eventData = {
+					id:id,
+					title: title,
+					start: start,
+					end: end,
+					backgroundColor:color
+				};
+				// $.ajax({
+				// })
+				$('#calendar').fullCalendar('refetchEvents');
+			}
+		})
+	}
+	function time(){
+		var up = laydate.render({
+			elem: '#start',
+			min: 0,
+			max:'2099-01-01 00:00:00',
+			type:'datetime',
+			done: function(value, date, endDate){
+				value!==''&&$("#end").attr('disabled',false);
+				down.config.min = {
+					year: date.year,
+					month: date.month - 1,
+					date: date.date,
+					hours: date.hours,
+					minutes: date.minutes,
+					seconds: date.seconds
+				}
+			}
+		});
+		//结束时间
+		var down = laydate.render({
+			elem: '#end',
+			type:'datetime'
+		});
+	}
+</script>
+
+</body>
+</html>

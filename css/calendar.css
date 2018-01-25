@@ -1,0 +1,66 @@
+.fc-body {
+  background: #fff;
+}
+.fc-widget-header {
+  line-height: 48px;
+  color: #fff;
+  background: #37B4EE;
+}
+.fc-day-top {
+  font-weight: bold;
+  padding: 10px !important;
+}
+.fc-past {
+  color: #9b9b9b;
+}
+.fc-future,
+.fc-today {
+  color: #4a4a4a;
+}
+.fc-other-month.fc-past {
+  color: #d8d8d8;
+}
+.fc-today-button {
+  margin-left: .4rem !important;
+  border-radius: 0 !important;
+  background: #fff !important;
+  box-shadow: none !important;
+}
+.fc-center h2 {
+  color: #333;
+}
+.fc-button-group button {
+  border-radius: 0 !important;
+  background: #fff !important;
+  box-shadow: none !important;
+}
+.fc-event-container a {
+  line-height: 24px !important;
+  border-radius: 0 !important;
+}
+.fc-unthemed td.fc-today {
+  background: #FAF2CD;
+}
+.fc-event {
+  border-color: transparent;
+}
+.dropdown-menu li {
+  margin-bottom: 5px;
+}
+.dropdown .color {
+  display: inline-block;
+  vertical-align: top;
+  line-height: 20px;
+  padding: 6px 0;
+}
+.dropdown .color span {
+  display: inline-block;
+  vertical-align: top;
+  height: 20px;
+  width: 40px;
+  background: #ec4f04;
+  margin-left: 10px;
+}
+.form-control[readonly] {
+  background: #fff !important;
+}
